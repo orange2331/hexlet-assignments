@@ -1,7 +1,10 @@
 package exercise;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import exercise.component.UserProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import exercise.model.User;
+import exercise.component.UserProperties;
 
 @SpringBootApplication
 @RestController
@@ -26,8 +30,13 @@ public class Application {
     private UserProperties admins;
 
     @GetMapping("/admins")
-    public List<String> getEmails() {
-        return admins.getAdmins();
+    public Stream<String> getEmails() {
+            var admin = users.stream()
+                    .filter(u -> admins.getAdmins().stream()
+                                    .anyMatch(y -> y.equals(u.getEmail())) )
+                    .map(u -> u.getName())
+                    .sorted();
+            return admin; //todo вернуть только имена отсортированные по алфавиту
     }
     // END
 
